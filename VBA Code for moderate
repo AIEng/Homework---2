@@ -1,0 +1,82 @@
+Option Explicit
+
+Sub moderate()
+
+'here we defin varaiables 
+
+Dim writetorow As Long
+Dim total As Double
+Dim row As Long
+Dim firstrow As String
+Dim lastrow As Long
+Dim openprice As Double
+Dim closingprice As Double
+Dim yearlychange As Double
+Dim percentchange As Double
+
+'here we assign title for each column
+Cells(1, 9).Value = "Ticker"
+Cells(1, 10).Value = "Yearly CHange"
+Cells(1, 11).Value = "Percent Change"
+Cells(1, 12).Value = "Total Stock Volume"
+
+'start a counter in addition to specifiy range for each cell
+writetorow = 2
+firstrow = Range("A2").Value
+total = Range("G2").Value
+
+openprice = Range("C2").Value
+closingprice = Range("F262").Value
+yearlychange = Range("J2").Value
+
+lastrow = ActiveSheet.Cells(ActiveSheet.Rows.Count, "A").End(xlUp).row
+
+' for loop to repeat codes
+
+For row = 2 To lastrow + 1
+         'we get the total value for each stock       
+    If Cells(row, 1).Value = firstrow Then
+        total = total + Cells(row, 7).Value
+        yearlychange = closingprice - openprice
+
+    Else
+    'post the value in the new column
+        Cells(writetorow, 9).Value = firstrow
+        Cells(writetorow, 12).Value = total
+        
+        openprice = Cells(row - 261, 3).Value
+        closingprice = Cells(row - 1, 6).Value
+        
+        'equation to calculate yearlychange
+        yearlychange = closingprice - openprice
+        Cells(writetorow, 10).Value = yearlychange
+        
+        'simple fix in case we are deviding by 0
+            If openprice = 0 Then
+            percentchange = 0
+            Else
+            percentchange = yearlychange / openprice
+            End If
+            
+        Cells(writetorow, 11).Value = percentchange
+        
+        'puting a green background for values higher than 0 and red for less than 0
+    If Cells(writetorow, 10).Value > 0 Then
+
+        Cells(writetorow, 10).Interior.Color = vbGreen
+
+        Else
+        Cells(writetorow, 10).Interior.Color = vbRed
+
+        End If
+
+        writetorow = writetorow + 1
+        firstrow = Cells(row, 1).Value
+        total = Cells(row, 7).Value
+
+
+    End If
+
+Next row
+
+End Sub
